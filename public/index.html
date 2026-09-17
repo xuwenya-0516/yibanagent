@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="乳腺健康助手微信端体验" />
+    <title>乳腺健康助手 · 微信端</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css" />
+    <link rel="stylesheet" href="/styles.css?v=wechat-prd-1" />
+  </head>
+  <body>
+    <section class="registration-screen" id="registrationScreen" aria-labelledby="registrationTitle" hidden>
+      <div class="registration-visual">
+        <div class="registration-wechat-bar"><i class="ti ti-chevron-left" aria-hidden="true"></i><strong>乳腺健康助手</strong><i class="ti ti-dots" aria-hidden="true"></i></div>
+        <span class="registration-brand-mark">依</span>
+        <div>
+          <span class="registration-eyebrow">专属 AI 健康伙伴</span>
+          <h1>您好，欢迎来到<br>「乳腺健康助手」</h1>
+          <p>在开始聊天前，请先完成一次基础信息绑定。今后您只需要像发微信一样和我说话，身体感受、用药和报告都会自动整理到病程档案中。</p>
+        </div>
+        <div class="registration-trust">
+          <span><i class="ti ti-lock" aria-hidden="true"></i> 本地安全保存</span>
+          <span><i class="ti ti-user-heart" aria-hidden="true"></i> 医患信息同步</span>
+          <span><i class="ti ti-file-description" aria-hidden="true"></i> 支持既往报告</span>
+        </div>
+      </div>
+
+      <div class="registration-panel">
+        <form class="registration-form" id="registrationForm">
+          <div class="registration-heading">
+            <span class="registration-step">健康助手正在为您建档</span>
+            <h2 id="registrationTitle">完善基础信息</h2>
+            <p>信息会用于个性化随访，并同步到医生端由医护人员复核。</p>
+          </div>
+
+          <div class="registration-grid">
+            <label class="registration-field">
+              <span>患者姓名 <em>*</em></span>
+              <span class="registration-input"><i class="ti ti-user" aria-hidden="true"></i><input id="registerName" name="display_name" maxlength="40" autocomplete="name" placeholder="请输入姓名" required></span>
+            </label>
+            <label class="registration-field">
+              <span>年龄 <em>*</em></span>
+              <span class="registration-input"><i class="ti ti-calendar-user" aria-hidden="true"></i><input id="registerAge" name="age" type="number" min="0" max="120" inputmode="numeric" placeholder="请输入年龄" required></span>
+            </label>
+          </div>
+
+          <fieldset class="registration-field registration-sex">
+            <legend>性别 <em>*</em></legend>
+            <div>
+              <label><input type="radio" name="sex" value="女" required><span><i class="ti ti-gender-female"></i>女</span></label>
+              <label><input type="radio" name="sex" value="男"><span><i class="ti ti-gender-male"></i>男</span></label>
+              <label><input type="radio" name="sex" value="其他"><span><i class="ti ti-gender-bigender"></i>其他</span></label>
+              <label><input type="radio" name="sex" value="不愿透露"><span><i class="ti ti-eye-off"></i>不愿透露</span></label>
+            </div>
+          </fieldset>
+
+          <div class="registration-grid">
+            <label class="registration-field">
+              <span>确诊时间 <em>*</em></span>
+              <span class="registration-input"><i class="ti ti-calendar-event" aria-hidden="true"></i><input id="registerDiagnosisDate" name="diagnosis_date" type="date" required></span>
+            </label>
+            <label class="registration-field">
+              <span>当前治疗 <em>*</em></span>
+              <span class="registration-input"><i class="ti ti-heart-rate-monitor" aria-hidden="true"></i><input id="registerTreatment" name="current_treatment" maxlength="100" placeholder="如：内分泌治疗" required></span>
+            </label>
+          </div>
+
+          <label class="registration-field">
+            <span>当前病情或主要诊断 <em>*</em></span>
+            <textarea id="registerCondition" name="condition_summary" maxlength="5000" rows="3" placeholder="例如：乳腺癌术后，目前正在接受内分泌治疗；近期腰背部疼痛……" required></textarea>
+            <small>可填写诊断、治疗阶段和目前最关心的身体问题。</small>
+          </label>
+
+          <label class="registration-field">
+            <span>既往病史与治疗经历</span>
+            <textarea id="registerHistory" name="medical_history" maxlength="5000" rows="2" placeholder="例如：手术时间、放化疗经历、正在使用的药物、药物过敏史等"></textarea>
+          </label>
+
+          <div class="registration-field">
+            <span>上传既往报告 <small>选填，最多 10 份</small></span>
+            <label class="registration-upload" id="registrationUpload">
+              <input id="registrationFiles" type="file" accept="image/*,.pdf,.txt" multiple>
+              <i class="ti ti-cloud-upload" aria-hidden="true"></i>
+              <span><strong>点击选择检查报告或病历</strong><small>支持图片、PDF、TXT，单份不超过 20MB</small></span>
+            </label>
+            <div class="registration-file-list" id="registrationFileList"></div>
+          </div>
+
+          <label class="registration-consent">
+            <input id="registrationConsent" type="checkbox" required>
+            <span>我确认以上信息由本人或照护者提供，并同意用于本地健康管理及医生端随访展示。</span>
+          </label>
+
+          <p class="registration-error" id="registrationError" role="alert" hidden></p>
+          <button class="registration-submit" id="registrationSubmit" type="submit"><span>确认并开始聊天</span><i class="ti ti-message-circle" aria-hidden="true"></i></button>
+          <p class="registration-disclaimer"><i class="ti ti-shield-check" aria-hidden="true"></i> AI 建议仅供健康参考，不能替代医生诊断和治疗。</p>
+        </form>
+      </div>
+    </section>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <span class="mobile-status" aria-hidden="true"><strong>9:41</strong><span><i class="ti ti-antenna-bars-5"></i><i class="ti ti-wifi"></i><i class="ti ti-battery-4"></i></span></span>
+        <button class="wechat-back" id="backToChatButton" type="button" aria-label="返回聊天" hidden><i class="ti ti-chevron-left"></i></button>
+        <a class="brand" href="/" aria-label="乳腺健康助手聊天首页">
+          <span class="brand-mark">依</span>
+          <span class="brand-copy">
+            <strong id="brandTitle">乳腺健康助手</strong>
+            <small id="brandSubtitle">微信健康伙伴</small>
+          </span>
+        </a>
+        <div class="topbar-actions">
+          <span class="status" id="status"><i></i><span>正在连接</span></span>
+          <button class="icon-button service-button" id="serviceButton" data-action="services" type="button" title="健康服务" aria-label="打开健康服务"><i class="ti ti-dots" aria-hidden="true"></i></button>
+          <button class="icon-button" id="clearButton" type="button" title="清空对话" aria-label="清空对话">
+            <i class="ti ti-trash" aria-hidden="true"></i>
+          </button>
+        </div>
+      </header>
+
+      <main class="chat patient-view" id="chat" data-view="chat" aria-live="polite">
+        <section class="welcome" id="welcome">
+          <div class="assistant-row">
+            <div class="ai-avatar" aria-hidden="true">AI</div>
+            <div class="welcome-card">
+              <p>您好，我是您的专属 AI 健康伙伴。我会记住您说过的身体感受、用药和报告变化，在需要时帮您整理给医生看。</p>
+              <p>今天感觉怎么样？直接和我说就好。</p>
+              <div class="welcome-list">
+                <span><i class="ti ti-message-heart" aria-hidden="true"></i> 自然对话整理全病程档案</span>
+                <span><i class="ti ti-heart-rate-monitor" aria-hidden="true"></i> 不良反应与 PRO 程度同步采集</span>
+                <span><i class="ti ti-bone" aria-hidden="true"></i> BoneSight 所需资料在聊天中补充</span>
+              </div>
+              <p class="care-note"><i class="ti ti-crown" aria-hidden="true"></i> 演示账号已开启完整随访功能</p>
+            </div>
+          </div>
+
+          <div class="primary-options" aria-label="请选择需要的帮助">
+          <button type="button" data-guide="symptom"><span>我有点不舒服</span></button>
+          <button type="button" data-guide="medicine"><span>今天怎么用药？</span></button>
+          <button type="button" data-guide="report"><span>我要发一份报告</span></button>
+          <button type="button" data-guide="knowledge"><span>帮我看看这个说法</span></button>
+          </div>
+        </section>
+
+        <div class="messages" id="messages"></div>
+      </main>
+
+      <main class="patient-view records-view" id="recordsView" data-view="records" hidden>
+        <section class="view-heading">
+          <div>
+            <span class="view-eyebrow">个人健康档案</span>
+            <h1>病程记录本</h1>
+            <p>集中查看治疗方案、身体变化与检查报告。以下为演示档案，不代表真实诊断。</p>
+          </div>
+          <span class="demo-badge"><i class="ti ti-shield-lock" aria-hidden="true"></i> 演示数据</span>
+        </section>
+
+        <section class="record-card patient-profile-card">
+          <div class="patient-summary">
+            <span class="patient-avatar" aria-hidden="true">患</span>
+            <div><strong id="patientProfileName">患者档案</strong><span id="patientProfileMeta">完成首次登记后显示资料</span></div>
+          </div>
+          <div class="record-grid record-grid-four">
+            <div><span>年龄</span><strong id="patientProfileAge">—</strong></div>
+            <div><span>性别</span><strong id="patientProfileSex">—</strong></div>
+            <div><span>既往报告</span><strong id="patientProfileReports">0 份</strong></div>
+            <div class="record-alert"><span>下次复诊</span><strong id="recordFollowup">待设置</strong></div>
+            <div class="record-grid-wide"><span>当前病情</span><strong id="patientProfileCondition">尚未登记</strong></div>
+          </div>
+        </section>
+
+        <section class="record-card">
+          <div class="section-title"><span><i class="ti ti-file-heart" aria-hidden="true"></i> 病史摘要</span></div>
+          <div class="record-grid record-grid-two">
+            <div><span>首次诊断日期</span><strong>2021-07-05</strong></div>
+            <div><span>最近随访</span><strong>2026-07-08</strong></div>
+            <div><span>转移部位</span><strong>骨转移（L2、L3 椎体）</strong></div>
+            <div><span>基因检测</span><strong>ESR1 突变阳性</strong></div>
+            <div class="record-grid-wide"><span>治疗摘要</span><strong>完成辅助治疗后进入规范随访，目前按医嘱接受系统治疗。</strong></div>
+          </div>
+        </section>
+
+        <section class="record-card">
+          <div class="section-title"><span><i class="ti ti-medicine-syrup" aria-hidden="true"></i> 当前治疗方案</span></div>
+          <p class="treatment-line">示例用药方案 · 请严格以主管医生实际处方为准</p>
+          <div class="pill-row"><span>系统治疗</span><span>内分泌治疗</span><span>按期复诊</span></div>
+        </section>
+
+        <section class="record-card conversation-medication-card">
+          <div class="section-title">
+            <span><i class="ti ti-message-2-share" aria-hidden="true"></i> 对话整理的用药记录</span>
+            <small>点开可回溯来源对话</small>
+          </div>
+          <div class="conversation-medication-list" id="conversationMedicationRecords">
+            <p class="record-empty">在聊天中告诉 AI“我最近在用…药”，确认后会整理到这里。</p>
+          </div>
+        </section>
+
+        <section class="record-card">
+          <div class="section-title">
+            <span><i class="ti ti-alert-triangle" aria-hidden="true"></i> 当前不良反应</span>
+            <button type="button" class="text-button" data-record-action="adverse">查看历史</button>
+          </div>
+          <div class="pill-row warning"><span>轻度口腔黏膜不适</span><span>轻度乏力</span><span>骨质疏松</span></div>
+        </section>
+
+        <section class="record-card">
+          <div class="section-title">
+            <span><i class="ti ti-report-medical" aria-hidden="true"></i> 近期异常检查结果</span>
+            <div class="record-actions">
+              <button type="button" class="solid-mini-button" data-record-action="upload">上传报告</button>
+              <button type="button" class="text-button" data-record-action="reports">查看更多</button>
+            </div>
+          </div>
+          <div class="metric-grid">
+            <div><span>CA15-3</span><strong>76 U/mL</strong></div>
+            <div><span>KPS 评分</span><strong>80</strong></div>
+            <div><span>骨密度</span><strong>-2.2</strong></div>
+            <div><span>肝转移灶大小</span><strong>1.0 × 0.8 cm</strong></div>
+          </div>
+        </section>
+
+        <section class="record-card">
+          <div class="section-title">
+            <span><i class="ti ti-timeline-event" aria-hidden="true"></i> 治疗阶段摘要</span>
+            <button type="button" class="text-button" data-record-action="timeline">查看时间轴</button>
+          </div>
+          <div class="phase-list">
+            <article class="phase active"><span class="phase-index">11</span><div><strong>三线治疗</strong><small>2026 年 5 月至今 · 进行中</small><p>系统治疗 + 症状管理，持续评估疗效和耐受性。</p></div><em>进行中</em></article>
+            <article class="phase"><span class="phase-index">10</span><div><strong>二线治疗</strong><small>2025 年 9 月—2026 年 3 月</small><p>完成阶段性治疗，根据评估结果调整方案。</p></div><em>已完成</em></article>
+            <article class="phase"><span class="phase-index">09</span><div><strong>一线解救治疗</strong><small>2025 年 2 月—8 月</small><p>规范治疗并记录不良反应及生活质量变化。</p></div><em>已完成</em></article>
+          </div>
+        </section>
+      </main>
+
+      <main class="patient-view tasks-view" id="tasksView" data-view="tasks" hidden>
+        <section class="view-heading task-heading">
+          <div><span class="view-eyebrow">健康计划</span><h1>今日任务</h1><p>从简单的小目标开始，让健康管理更容易坚持。</p></div>
+          <strong class="task-counter" id="taskCounter">0/3</strong>
+        </section>
+        <section class="task-card">
+          <div class="section-title"><span><i class="ti ti-bell-heart" aria-hidden="true"></i> 健康提醒</span></div>
+          <label class="health-task"><input type="checkbox" data-task-id="water"><span class="task-icon blue"><i class="ti ti-droplet" aria-hidden="true"></i></span><span><strong>今日饮水</strong><small>建议分次完成 1500–2000 ml 饮水</small></span><em>日常</em></label>
+          <label class="health-task"><input type="checkbox" data-task-id="walk"><span class="task-icon amber"><i class="ti ti-walk" aria-hidden="true"></i></span><span><strong>保证充足睡眠</strong><small>尽量保持 7–8 小时规律睡眠</small></span><em>日常</em></label>
+          <label class="health-task"><input type="checkbox" data-task-id="medicine"><span class="task-icon coral"><i class="ti ti-pill" aria-hidden="true"></i></span><span><strong>按医嘱用药</strong><small>如有明显不适，请及时联系医护人员</small></span><em>治疗</em></label>
+        </section>
+        <section class="task-card followup-task-card">
+          <div><i class="ti ti-calendar-event" aria-hidden="true"></i><span><small>下次复诊</small><strong id="taskFollowup">尚未设置</strong><em>中国医学科学院肿瘤医院</em></span></div>
+          <button type="button" data-action="followup">设置日期</button>
+        </section>
+        <section class="task-card">
+          <div class="section-title"><span><i class="ti ti-target-arrow" aria-hidden="true"></i> 健康目标</span></div>
+          <div class="goal-row"><span>每日步数</span><div><i style="--progress:70%"></i></div><strong>3500 / 5000</strong></div>
+          <div class="goal-row green"><span>蔬果摄入</span><div><i style="--progress:62.5%"></i></div><strong>5 / 8</strong></div>
+          <div class="goal-row coral"><span>体能恢复</span><div><i style="--progress:80%"></i></div><strong>80 / 100</strong></div>
+        </section>
+      </main>
+
+      <main class="patient-view help-view" id="helpView" data-view="help" hidden>
+        <section class="view-heading help-heading"><div><span class="view-eyebrow">自助服务</span><h1>帮助中心</h1><p>查找常见问题、治疗知识和使用说明。</p></div></section>
+        <label class="help-search"><i class="ti ti-search" aria-hidden="true"></i><span class="sr-only">搜索帮助内容</span><input id="helpSearch" type="search" placeholder="搜索问题或关键词…"></label>
+        <section class="help-card">
+          <div class="section-title"><span><i class="ti ti-help-circle" aria-hidden="true"></i> 常见问题</span></div>
+          <details class="faq-item" open><summary>如何正确服用治疗药物？<i class="ti ti-chevron-down" aria-hidden="true"></i></summary><p>请严格按照主管医生处方服用，不要自行增减剂量。漏服、呕吐或出现明显不适时，请先联系医护人员确认处理方式。</p></details>
+          <details class="faq-item"><summary>治疗期间出现恶心呕吐怎么办？<i class="ti ti-chevron-down" aria-hidden="true"></i></summary><p>记录发生时间、频率和能否进食饮水。如持续加重、不能饮水或伴明显乏力，应尽快联系医生。</p></details>
+          <details class="faq-item"><summary>治疗期间可以进行哪些活动？<i class="ti ti-chevron-down" aria-hidden="true"></i></summary><p>在医生允许的前提下，可选择散步、拉伸等低强度活动，以不引起明显不适为原则。</p></details>
+          <details class="faq-item"><summary>复查需要携带哪些资料？<i class="ti ti-chevron-down" aria-hidden="true"></i></summary><p>建议携带既往病历、用药清单、近期检查报告以及这段时间记录的症状变化。</p></details>
+        </section>
+        <section class="help-card knowledge-card">
+          <div class="section-title"><span><i class="ti ti-books" aria-hidden="true"></i> 科普知识</span></div>
+          <button type="button" data-help-prompt="请给我乳腺肿瘤治疗期间的饮食建议"><i class="ti ti-salad" aria-hidden="true"></i><span><strong>治疗期间饮食指南</strong><small>营养搭配与进食不适时的应对</small></span><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+          <button type="button" data-help-prompt="请指导我在治疗期间安全运动"><i class="ti ti-run" aria-hidden="true"></i><span><strong>康复锻炼指导</strong><small>循序渐进地恢复体力</small></span><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+          <button type="button" data-help-prompt="请介绍常见的治疗不良反应和需要就医的信号"><i class="ti ti-pill" aria-hidden="true"></i><span><strong>常见药物不良反应</strong><small>了解症状和需要警惕的信号</small></span><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+          <button type="button" data-help-prompt="我最近情绪低落，请和我聊聊并告诉我何时需要专业帮助"><i class="ti ti-messages" aria-hidden="true"></i><span><strong>心理调适与支持</strong><small>缓解压力，获得情绪支持</small></span><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+        </section>
+      </main>
+
+      <section class="action-dock" aria-label="健康快捷功能">
+        <div class="quick-tools" id="quickTools">
+          <button type="button" data-guide="medicine"><i class="ti ti-pill" aria-hidden="true"></i><span>用药查询</span></button>
+          <button type="button" data-prompt="我可能出现了用药后的不良反应，请引导我描述具体情况"><i class="ti ti-alert-circle" aria-hidden="true"></i><span>不良反应</span></button>
+          <button type="button" data-action="followup"><i class="ti ti-calendar-check" aria-hidden="true"></i><span>复诊提醒</span></button>
+          <button type="button" data-action="records"><i class="ti ti-clipboard-text" aria-hidden="true"></i><span>查看病历</span></button>
+          <button type="button" data-prompt="我想开始补充乳腺癌骨转移风险资料"><i class="ti ti-bone" aria-hidden="true"></i><span>骨转移资料</span></button>
+        </div>
+
+        <form class="composer" id="composer">
+          <button class="voice-button" data-action="voice" type="button" title="模拟语音输入" aria-label="语音输入"><i class="ti ti-microphone" aria-hidden="true"></i></button>
+          <button class="attach-button" id="attachButton" type="button" title="上传报告" aria-label="上传报告">
+            <i class="ti ti-paperclip" aria-hidden="true"></i>
+          </button>
+          <label class="sr-only" for="prompt">输入您的问题</label>
+          <textarea id="prompt" rows="1" maxlength="20000" placeholder="输入您的问题…"></textarea>
+          <button class="send-button" id="sendButton" type="submit" aria-label="发送消息">
+            <i class="ti ti-send-2" aria-hidden="true"></i>
+          </button>
+          <button class="more-button" data-action="services" type="button" title="更多健康服务" aria-label="更多健康服务"><i class="ti ti-plus" aria-hidden="true"></i></button>
+          <input id="fileInput" type="file" accept="image/*,.pdf,.txt" hidden />
+        </form>
+        <p class="medical-disclaimer">AI 建议仅供健康参考，不能替代医生的诊断和治疗。</p>
+      </section>
+
+      <nav class="bottom-nav" aria-label="患者端主导航" role="tablist">
+        <button class="active" id="navChat" type="button" data-nav="chat" role="tab" aria-controls="chat" aria-selected="true"><i class="ti ti-message-circle" aria-hidden="true"></i><span>聊天</span></button>
+        <button id="navRecords" type="button" data-nav="records" role="tab" aria-controls="recordsView" aria-selected="false"><i class="ti ti-file-description" aria-hidden="true"></i><span>病历</span></button>
+        <button id="navTasks" type="button" data-nav="tasks" role="tab" aria-controls="tasksView" aria-selected="false"><i class="ti ti-circle-check" aria-hidden="true"></i><span>任务</span></button>
+        <button id="navHelp" type="button" data-nav="help" role="tab" aria-controls="helpView" aria-selected="false"><i class="ti ti-lifebuoy" aria-hidden="true"></i><span>帮助</span></button>
+      </nav>
+    </div>
+
+    <div class="feature-dialog-backdrop" id="featureDialogBackdrop" hidden>
+      <section class="feature-dialog" role="dialog" aria-modal="true" aria-labelledby="featureDialogTitle">
+        <button class="dialog-close" id="featureDialogClose" type="button" aria-label="关闭"><i class="ti ti-x" aria-hidden="true"></i></button>
+        <div id="featureDialogContent"></div>
+      </section>
+    </div>
+
+    <div class="dialog-backdrop" id="dialogBackdrop" hidden>
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+        <button class="dialog-close" id="dialogClose" type="button" aria-label="关闭"><i class="ti ti-x" aria-hidden="true"></i></button>
+        <div class="dialog-icon"><i class="ti ti-calendar-heart" aria-hidden="true"></i></div>
+        <h2 id="dialogTitle">设置复诊提醒</h2>
+        <p>选择复诊日期，我们会保存在这台设备上。</p>
+        <label for="followupDate">复诊日期</label>
+        <input id="followupDate" type="date" />
+        <button class="dialog-primary" id="saveFollowup" type="button">保存提醒</button>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js?v=wechat-prd-1" defer></script>
+  </body>
+</html>

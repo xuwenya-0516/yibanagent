@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="AI 医生助理——乳腺肿瘤患者管理后台" />
+    <title>AI 医生助理 · 医生端</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css" />
+    <link rel="stylesheet" href="/doctor-v2.css?v=medical-saas-2" />
+  </head>
+  <body>
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <a class="admin-brand" href="#dashboard" data-route="dashboard"><span class="brand-mark"><i class="ti ti-heart-handshake"></i></span><span><strong>AI医生助理</strong><small>乳腺肿瘤管理平台</small></span></a>
+        <div class="doctor-card"><span class="doctor-avatar">王</span><div><small>医生端</small><strong>王主任</strong><em>乳腺肿瘤科</em></div></div>
+        <nav class="admin-nav" aria-label="医生端一级导航">
+          <a class="active" href="#dashboard" data-route="dashboard"><i class="ti ti-layout-dashboard"></i><span>数据看板</span></a>
+          <a href="#patients" data-route="patients"><i class="ti ti-users"></i><span>患者管理</span></a>
+          <a href="#adverse" data-route="adverse"><i class="ti ti-alert-triangle"></i><span>不良反应</span><b id="navAdverseBadge">0</b></a>
+          <a href="#knowledge" data-route="knowledge"><i class="ti ti-books"></i><span>知识库管理</span></a>
+          <a href="#health" data-route="health"><i class="ti ti-heart-rate-monitor"></i><span>健康管理</span></a>
+          <a href="#permissions" data-route="permissions"><i class="ti ti-user-shield"></i><span>医生权限配置</span></a>
+          <a href="#qrcode" data-route="qrcode"><i class="ti ti-qrcode"></i><span>二维码管理</span></a>
+        </nav>
+        <div class="sidebar-foot"><a href="/" target="_blank"><i class="ti ti-device-mobile"></i>打开患者端</a><p><i class="ti ti-shield-check"></i>临床辅助系统<br><span>患者自报数据需医护复核</span></p></div>
+      </aside>
+
+      <div class="admin-workspace">
+        <header class="admin-topbar">
+          <div class="breadcrumb"><span>医生端</span><i class="ti ti-chevron-right"></i><strong id="pageBreadcrumb">数据看板</strong></div>
+          <div class="topbar-actions"><label class="global-search"><i class="ti ti-search"></i><input id="globalSearch" type="search" placeholder="搜索患者姓名或 ID" /></label><button type="button" class="icon-button" title="待办提醒"><i class="ti ti-bell"></i><span>3</span></button><div class="topbar-user"><span>王</span><div><strong>王主任</strong><small>乳腺肿瘤科</small></div><i class="ti ti-chevron-down"></i></div></div>
+        </header>
+
+        <main class="admin-main">
+          <div class="page-loading" id="pageLoading"><i class="ti ti-loader-2"></i><span>正在加载患者数据…</span></div>
+
+          <section class="page-view active" data-page="dashboard">
+            <div class="page-heading"><div><h1>数据看板</h1><p>患者治疗、随访与风险监测总览</p></div><div class="heading-actions"><span id="dataUpdatedAt"><i class="ti ti-clock"></i>等待更新</span><button type="button" class="secondary-button" id="refreshData"><i class="ti ti-refresh"></i>刷新数据</button></div></div>
+            <div class="kpi-grid">
+              <article class="kpi-card"><span class="kpi-icon blue"><i class="ti ti-users"></i></span><div><small>总患者数</small><strong id="kpiPatients">0</strong><em>已纳入管理</em></div></article>
+              <article class="kpi-card"><span class="kpi-icon green"><i class="ti ti-user-plus"></i></span><div><small>本月新增</small><strong id="kpiNewPatients">0</strong><em>较上月持续更新</em></div></article>
+              <article class="kpi-card"><span class="kpi-icon red"><i class="ti ti-activity-heartbeat"></i></span><div><small>高风险患者</small><strong id="kpiHighRisk">0</strong><em>需优先关注</em></div></article>
+              <article class="kpi-card"><span class="kpi-icon orange"><i class="ti ti-alert-circle"></i></span><div><small>严重不良反应</small><strong id="kpiSevereAdverse">0</strong><em>CTCAE 3级以上</em></div></article>
+              <article class="kpi-card"><span class="kpi-icon purple"><i class="ti ti-calendar-event"></i></span><div><small>待随访患者</small><strong id="kpiFollowup">0</strong><em>未来7天内</em></div></article>
+            </div>
+            <div class="dashboard-stat-grid">
+              <article class="surface chart-card"><div class="card-heading"><div><h2>治疗阶段分布</h2><p>当前患者治疗状态</p></div><button type="button" class="text-button" data-route="patients">查看患者</button></div><div class="donut-layout"><div class="donut" id="treatmentDonut"><span><strong id="treatmentTotal">0</strong><small>患者</small></span></div><div class="chart-legend" id="treatmentLegend"></div></div></article>
+              <article class="surface chart-card"><div class="card-heading"><div><h2>分子分型分布</h2><p>基于已登记病理信息</p></div><span class="data-badge">实时</span></div><div class="donut-layout"><div class="donut subtype" id="subtypeDonut"><span><strong id="subtypeTotal">0</strong><small>已分型</small></span></div><div class="chart-legend" id="subtypeLegend"></div></div></article>
+            </div>
+            <div class="dashboard-bottom-grid">
+              <article class="surface timeline-card"><div class="card-heading"><div><h2>不良反应时间轴</h2><p>治疗后不同阶段的 CTCAE 分布</p></div><label class="compact-select">药物<select id="dashboardDrugSelect"><option>全部药物</option></select></label></div><div class="heatmap-wrap" id="dashboardHeatmap"></div><div class="ctcae-legend"><span><i class="grade-1"></i>1级 轻微</span><span><i class="grade-2"></i>2级 中度</span><span><i class="grade-3"></i>3级 严重</span><span><i class="grade-4"></i>4级 危及生命</span></div></article>
+              <article class="surface followup-card"><div class="card-heading"><div><h2>随访患者</h2><p>近期需要处理的随访任务</p></div><button type="button" class="text-button" data-route="health">查看全部</button></div><div class="followup-list" id="followupList"></div></article>
+            </div>
+          </section>
+
+          <section class="page-view" data-page="patients">
+            <div class="page-heading"><div><h1>患者管理</h1><p>集中管理乳腺肿瘤患者档案与治疗进程</p></div><button type="button" class="primary-button" id="addPatientDemo"><i class="ti ti-user-plus"></i>新增患者</button></div>
+            <article class="surface list-panel"><div class="filter-bar"><label><span>治疗阶段</span><select id="patientStageFilter"><option value="">全部阶段</option><option>手术治疗</option><option>化疗</option><option>放疗</option><option>内分泌治疗</option><option>靶向治疗</option><option>随访</option></select></label><label class="wide-filter"><span>患者搜索</span><div class="filter-input"><i class="ti ti-search"></i><input id="patientSearch" type="search" placeholder="输入患者姓名或患者 ID" /></div></label><button type="button" class="secondary-button" id="patientSearchButton"><i class="ti ti-search"></i>查询</button><button type="button" class="ghost-button" id="patientFilterReset">重置</button></div><div class="table-scroll"><table class="data-table"><thead><tr><th>患者信息</th><th>诊断</th><th>分期</th><th>分子分型</th><th>当前治疗阶段</th><th>标签</th><th>操作</th></tr></thead><tbody id="patientTableBody"></tbody></table></div><div class="pagination"><span id="patientPageInfo">共 0 条</span><div><button type="button" id="patientPrev"><i class="ti ti-chevron-left"></i></button><b id="patientPageNumber">1</b><button type="button" id="patientNext"><i class="ti ti-chevron-right"></i></button></div></div></article>
+          </section>
+
+          <section class="page-view" data-page="patient-detail">
+            <div class="page-heading patient-detail-heading"><div><button type="button" class="back-button" data-route="patients"><i class="ti ti-arrow-left"></i>返回患者列表</button><h1 id="detailPatientName">患者详情</h1><p id="detailPatientMeta">—</p></div><div class="heading-actions"><span class="status-tag blue" id="detailPatientStatus">治疗中</span><button type="button" class="secondary-button" id="exportPatient"><i class="ti ti-file-export"></i>导出档案</button></div></div>
+            <div class="patient-overview-grid"><article class="surface info-card"><div class="info-card-title"><i class="ti ti-user"></i><h2>基本信息</h2></div><dl id="basicInfo"></dl></article><article class="surface info-card"><div class="info-card-title"><i class="ti ti-microscope"></i><h2>分子分型与免疫组化</h2></div><dl id="pathologyInfo"></dl></article><article class="surface info-card"><div class="info-card-title"><i class="ti ti-pill"></i><h2>治疗信息</h2></div><dl id="treatmentInfo"></dl><div class="tag-row" id="detailTags"></div></article></div>
+            <article class="surface detail-tabs-card"><div class="record-tabs" role="tablist"><button class="active" type="button" data-detail-tab="summary">病历摘要<span id="summaryCount">0</span></button><button type="button" data-detail-tab="reports">检查报告<span id="reportCount">0</span></button><button type="button" data-detail-tab="adverse">不良反应<span id="adverseCount">0</span></button><button type="button" data-detail-tab="health">健康管理<span id="healthCount">0</span></button><button type="button" data-detail-tab="conversation">对话记录<span id="conversationCount">0</span></button></div><div class="record-panel active" data-detail-panel="summary"><div class="clinical-timeline" id="clinicalTimeline"></div></div><div class="record-panel" data-detail-panel="reports"><div class="report-grid" id="reportGrid"></div></div><div class="record-panel" data-detail-panel="adverse"><div class="table-scroll"><table class="data-table"><thead><tr><th>ID</th><th>症状</th><th>CTCAE 程度</th><th>报告日期</th><th>持续时间</th><th>关联用药</th><th>转归</th></tr></thead><tbody id="patientAdverseBody"></tbody></table></div></div><div class="record-panel" data-detail-panel="health"><div class="health-summary-grid" id="patientHealthSummary"></div><div class="section-divider"><h3>患者健康任务</h3><button type="button" class="text-button" data-route="health">管理配置</button></div><div class="table-scroll"><table class="data-table"><thead><tr><th>类型</th><th>任务名称</th><th>计划时间</th><th>状态</th></tr></thead><tbody id="patientTaskBody"></tbody></table></div></div><div class="record-panel" data-detail-panel="conversation"><div class="conversation-list" id="conversationList"></div></div></article>
+          </section>
+
+          <section class="page-view" data-page="adverse">
+            <div class="page-heading"><div><h1>不良反应管理</h1><p>按药物、治疗周期与 CTCAE 等级监测患者不良反应</p></div><button type="button" class="primary-button" id="exportAdverse"><i class="ti ti-download"></i>导出报表</button></div>
+            <div class="adverse-chart-grid"><article class="surface timeline-card"><div class="card-heading"><div><h2>药物—不良反应时间轴</h2><p>查看单一药物的发生规律</p></div><select class="bare-select" id="adverseDrugA"></select></div><div class="heatmap-wrap compact" id="adverseHeatmapA"></div></article><article class="surface timeline-card"><div class="card-heading"><div><h2>药物对比时间轴</h2><p>与其他治疗方案对比</p></div><select class="bare-select" id="adverseDrugB"></select></div><div class="heatmap-wrap compact" id="adverseHeatmapB"></div></article></div>
+            <div class="mini-kpi-grid"><article><span class="kpi-icon blue"><i class="ti ti-alert-circle"></i></span><div><small>总不良反应数量</small><strong id="adverseTotal">0</strong></div></article><article><span class="kpi-icon red"><i class="ti ti-urgent"></i></span><div><small>3级以上严重反应</small><strong id="adverseSevere">0</strong></div></article><article><span class="kpi-icon green"><i class="ti ti-circle-check"></i></span><div><small>已缓解数量</small><strong id="adverseResolved">0</strong></div></article></div>
+            <article class="surface list-panel"><div class="card-heading"><div><h2>有不良反应的患者</h2><p>按最新报告时间排序</p></div><label class="inline-search"><i class="ti ti-search"></i><input id="adversePatientSearch" type="search" placeholder="搜索患者" /></label></div><div class="adverse-patient-grid" id="adversePatientGrid"></div></article>
+          </section>
+
+          <section class="page-view" data-page="knowledge">
+            <div class="page-heading"><div><h1>知识库管理</h1><p>管理 AI 医生助理可引用的专业内容与知识源优先级</p></div><button type="button" class="primary-button" data-open-modal="knowledgeModal"><i class="ti ti-plus"></i>新增知识</button></div>
+            <article class="surface list-panel"><div class="filter-bar knowledge-filters"><label class="wide-filter"><span>知识搜索</span><div class="filter-input"><i class="ti ti-search"></i><input id="knowledgeSearch" type="search" placeholder="搜索知识标题或内容" /></div></label><label><span>分类</span><select id="knowledgeCategory"><option value="">全部分类</option><option>诊疗指南</option><option>患者教育</option><option>康复支持</option></select></label><label><span>类型</span><select id="knowledgeType"><option value="">全部类型</option><option>文章</option><option>视频</option><option>问卷</option></select></label><label><span>状态</span><select><option>全部状态</option><option>已发布</option><option>草稿</option></select></label></div><div class="table-scroll"><table class="data-table"><thead><tr><th>ID</th><th>标题</th><th>分类</th><th>类型</th><th>作者/团队</th><th>共享</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead><tbody id="knowledgeTableBody"></tbody></table></div><div class="pagination"><span id="knowledgePageInfo">共 0 条</span><div><button type="button"><i class="ti ti-chevron-left"></i></button><b>1</b><button type="button"><i class="ti ti-chevron-right"></i></button></div></div></article>
+            <article class="surface priority-panel"><div class="card-heading"><div><h2>知识库优先级配置</h2><p>顺序越靠前，AI 检索时优先级越高</p></div><span class="data-badge">已启用 3 个知识源</span></div><div class="table-scroll"><table class="data-table"><thead><tr><th>优先级</th><th>团队名称</th><th>医院</th><th>科室</th><th>知识数量</th><th>启用状态</th><th>操作</th></tr></thead><tbody id="priorityTableBody"></tbody></table></div></article>
+          </section>
+
+          <section class="page-view" data-page="health">
+            <div class="page-heading"><div><h1>健康管理配置</h1><p>根据治疗阶段批量定义随访路径和患者健康任务</p></div><button type="button" class="primary-button" data-open-modal="pathwayModal"><i class="ti ti-plus"></i>添加配置</button></div>
+            <article class="surface list-panel"><div class="category-tabs" id="healthCategoryTabs"><button class="active" type="button" data-health-category="随访检查">随访检查</button><button type="button" data-health-category="用药管理">用药管理</button><button type="button" data-health-category="康复指导">康复指导</button><button type="button" data-health-category="营养饮食">营养饮食</button><button type="button" data-health-category="心理关怀">心理关怀</button><button type="button" data-health-category="科普推送">科普推送</button></div><div class="health-rule-list" id="healthRuleList"></div></article>
+          </section>
+
+          <section class="page-view" data-page="permissions">
+            <div class="page-heading"><div><h1>医生权限配置</h1><p>管理医生账户及可访问的系统功能</p></div><button type="button" class="primary-button" id="inviteDoctor"><i class="ti ti-user-plus"></i>邀请医生</button></div>
+            <article class="surface list-panel"><div class="filter-bar"><label class="wide-filter"><span>医生搜索</span><div class="filter-input"><i class="ti ti-search"></i><input id="doctorSearch" type="search" placeholder="姓名或登录账号" /></div></label><label><span>所属科室</span><select><option>乳腺肿瘤科</option><option>乳腺外科</option><option>护理团队</option></select></label></div><div class="table-scroll"><table class="data-table"><thead><tr><th>医生姓名</th><th>登录账号</th><th>角色</th><th>权限列表</th><th>最近登录</th><th>操作</th></tr></thead><tbody id="doctorTableBody"></tbody></table></div></article>
+          </section>
+
+          <section class="page-view" data-page="qrcode">
+            <div class="page-heading"><div><h1>二维码管理</h1><p>建立患者与主治医生之间的绑定关系</p></div></div>
+            <div class="qr-layout"><article class="surface qr-card"><span class="qr-icon"><i class="ti ti-qrcode"></i></span><h2>您的医生二维码</h2><p>患者扫描此二维码即可绑定您作为主治医生</p><canvas id="doctorQrCanvas" width="240" height="240" aria-label="王主任绑定二维码"></canvas><div class="qr-actions"><button type="button" class="secondary-button" id="downloadQr"><i class="ti ti-download"></i>下载二维码</button><button type="button" class="secondary-button" id="printQr"><i class="ti ti-printer"></i>打印二维码</button><button type="button" class="ghost-button" id="refreshQr">生成新二维码</button></div></article><article class="surface bind-card"><div class="card-heading"><div><h2>医生绑定码</h2><p>患者也可在患者端手动输入</p></div><span class="status-tag green">有效</span></div><div class="bind-code" id="bindCode">826 417</div><p>有效期至 <strong id="bindCodeExpiry">—</strong>，过期后需重新生成。</p><button type="button" class="secondary-button" id="refreshBindCode"><i class="ti ti-refresh"></i>刷新绑定码</button><div class="binding-steps"><h3>患者绑定流程</h3><ol><li><span>1</span>患者打开乳腺健康助手</li><li><span>2</span>扫描二维码或输入绑定码</li><li><span>3</span>确认医生信息并完成绑定</li></ol></div></article></div>
+            <div class="qr-stat-grid"><article><small>总扫描次数</small><strong>128</strong><em>近30天 +24</em></article><article><small>绑定成功数量</small><strong>96</strong><em>成功率 75%</em></article><article><small>待确认绑定</small><strong>5</strong><em>请及时处理</em></article></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <dialog class="admin-modal" id="reportModal"><div class="modal-heading"><div><small>检查报告</small><h2 id="reportModalTitle">报告详情</h2></div><button type="button" data-close-modal><i class="ti ti-x"></i></button></div><div class="report-modal-meta" id="reportModalMeta"></div><div class="report-modal-body"><span>报告摘要</span><p id="reportModalNote">—</p></div><p class="source-note"><i class="ti ti-shield-check"></i>来自患者导入资料，仅供临床复核。</p></dialog>
+    <dialog class="admin-modal form-modal" id="knowledgeModal"><form id="knowledgeForm"><div class="modal-heading"><div><small>知识库管理</small><h2 id="knowledgeModalTitle">新增专业知识</h2></div><button type="button" data-close-modal><i class="ti ti-x"></i></button></div><div class="modal-form"><label>知识标题<input name="title" required placeholder="请输入标题" /></label><div class="form-row"><label>分类<select name="category"><option>患者教育</option><option>诊疗指南</option><option>康复支持</option></select></label><label>类型<select name="content_type"><option>文章</option><option>视频</option><option>问卷</option></select></label></div><label>所属科室<input name="department" value="乳腺肿瘤科" required /></label><label>内容链接<input name="source_url" type="url" placeholder="https://..." /></label><label>内容摘要<textarea name="summary" rows="4" placeholder="简要说明内容和适用患者"></textarea></label></div><div class="modal-actions"><button type="button" class="ghost-button" data-close-modal>取消</button><button type="submit" class="primary-button" id="knowledgeSubmitButton">确认发布</button></div></form></dialog>
+    <dialog class="admin-modal form-modal" id="pathwayModal"><form id="pathwayForm"><div class="modal-heading"><div><small>健康管理</small><h2 id="pathwayModalTitle">添加健康管理配置</h2></div><button type="button" data-close-modal><i class="ti ti-x"></i></button></div><div class="modal-form"><label>配置名称<input name="name" required placeholder="例如：术后首次复查提醒" /></label><div class="form-row"><label>类型<select name="category"><option>随访检查</option><option>用药管理</option><option>康复指导</option><option>营养饮食</option><option>心理关怀</option><option>科普推送</option></select></label><label>触发时间<input name="cadence" required placeholder="例如：T+90天" /></label></div><label>配置描述<textarea name="push_content" rows="3" required placeholder="说明任务内容"></textarea></label><label>适用人群<input name="audience" placeholder="化疗、放疗、康复期" /></label><input type="hidden" name="department" value="乳腺肿瘤科" /><input type="hidden" name="trigger_rule" value="按患者治疗阶段自动触发" /><input type="hidden" name="channel" value="患者端消息" /><input type="hidden" name="escalation_rule" value="异常时提醒医生" /></div><div class="modal-actions"><button type="button" class="ghost-button" data-close-modal>取消</button><button type="submit" class="primary-button">保存并启用</button></div></form></dialog>
+    <dialog class="admin-modal form-modal" id="permissionModal"><div class="modal-heading"><div><small>医生权限</small><h2 id="permissionDoctorName">配置权限</h2></div><button type="button" data-close-modal><i class="ti ti-x"></i></button></div><div class="permission-list" id="permissionList"></div><div class="modal-actions"><button type="button" class="ghost-button" data-close-modal>取消</button><button type="button" class="primary-button" id="savePermissions">保存权限</button></div></dialog>
+    <div class="app-toast" id="appToast" role="status"></div>
+    <div class="chart-tooltip" id="chartTooltip"></div>
+    <script src="/doctor-v2.js?v=medical-saas-2" defer></script>
+  </body>
+</html>
