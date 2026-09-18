@@ -53,14 +53,26 @@ function apiFetch(url, options = {}) {
   return window.fetch(url, { ...options, headers });
 }
 
-const SESSION_MESSAGES_KEY = "yiban-patient-messages-v3";
-const FOLLOWUP_KEY = "yiban-followup-date";
-const SESSION_CONVERSATION_KEY = "yiban-conversation-id-v2";
-const TASKS_KEY = "yiban-health-tasks-v1";
-const REPORTS_KEY = "yiban-demo-reports-v1";
-const PATIENT_PROFILE_KEY = "yiban-patient-profile-v1";
-let patientProfile = loadPatientProfile();
-let patientId = patientProfile?.id || null;
+// 当前公开演示链接固定以张某某的患者身份运行。浏览器里曾登记过的其他
+// 患者资料不会改变这个身份，所有对话和量表记录均归入 P20210705。
+const DEMO_PATIENT_ID = "P20210705";
+const DEMO_PATIENT_FALLBACK = {
+  id: DEMO_PATIENT_ID,
+  display_name: "张某某",
+  age: 53,
+  sex: "女",
+  condition_summary: "HR+/HER2- Luminal B 型乳腺癌，术后骨、肝转移；目前接受氟维司群联合依维莫司三线治疗。",
+  medical_history: "既往体健，无高血压、糖尿病等慢性病史；母亲 57 岁时确诊乳腺癌。",
+  reports: Array.from({ length: 7 }, (_, index) => ({ id: `demo-report-${index + 1}` })),
+};
+const SESSION_MESSAGES_KEY = `yiban-patient-${DEMO_PATIENT_ID}-messages-v1`;
+const FOLLOWUP_KEY = `yiban-patient-${DEMO_PATIENT_ID}-followup-date`;
+const SESSION_CONVERSATION_KEY = `yiban-patient-${DEMO_PATIENT_ID}-conversation-v1`;
+const TASKS_KEY = `yiban-patient-${DEMO_PATIENT_ID}-health-tasks-v1`;
+const REPORTS_KEY = `yiban-patient-${DEMO_PATIENT_ID}-demo-reports-v1`;
+const PATIENT_PROFILE_KEY = `yiban-patient-${DEMO_PATIENT_ID}-profile-v1`;
+let patientProfile = { ...DEMO_PATIENT_FALLBACK };
+let patientId = DEMO_PATIENT_ID;
 let selectedRegistrationFiles = [];
 let conversationId = loadConversationId();
 let messages = loadMessages();
@@ -70,10 +82,10 @@ let activeView = "chat";
 let medicationRecords = new Map();
 
 const viewMeta = {
-  chat: ["乳腺健康助手", "微信健康伙伴"],
-  records: ["病程记录本", "个人健康档案"],
-  tasks: ["今日任务", "健康计划"],
-  help: ["帮助中心", "健康知识与使用说明"],
+  chat: ["依伴AI", "张某某 · 微信健康伙伴"],
+  records: ["病程记录本", "张某某 · 个人健康档案"],
+  tasks: ["今日任务", "张某某 · 健康计划"],
+  help: ["帮助中心", "张某某 · 使用说明"],
 };
 
 const guides = {
@@ -118,10 +130,7 @@ function saveMessages() {
 }
 
 function loadPatientProfile() {
-  try {
-    const profile = JSON.parse(localStorage.getItem(PATIENT_PROFILE_KEY) || "null");
-    return profile && typeof profile.id === "string" && typeof profile.display_name === "string" ? profile : null;
-  } catch { return null; }
+  return { ...DEMO_PATIENT_FALLBACK };
 }
 
 function createPatientId() {
@@ -142,11 +151,33 @@ function renderPatientProfile() {
   if (!patientProfile) return;
   const reports = normalizedProfileReports();
   patientProfileName.textContent = patientProfile.display_name;
-  patientProfileMeta.textContent = `${patientProfile.age} 岁 · ${patientProfile.sex} · 首次登记资料`;
+  patientProfileMeta.textContent = `${patientProfile.id} · ${patientProfile.age} 岁 · ${patientProfile.sex} · 当前演示身份`;
   patientProfileAge.textContent = `${patientProfile.age} 岁`;
   patientProfileSex.textContent = patientProfile.sex;
   patientProfileReports.textContent = `${reports.length} 份`;
   patientProfileCondition.textContent = patientProfile.condition_summary || "尚未填写";
+  const avatar = document.querySelector(".patient-avatar");
+  if (avatar) avatar.textContent = "张";
+}
+
+async function loadDemoPatientProfile() {
+  // 先用内置资料立即进入聊天，再从数据库补齐张某某的完整档案。
+  patientId = DEMO_PATIENT_ID;
+  patientProfile = { ...DEMO_PATIENT_FALLBACK };
+  renderPatientProfile();
+  hideRegistration();
+  try {
+    const response = await apiFetch(`/api/patient/profile?patient_id=${encodeURIComponent(DEMO_PATIENT_ID)}`);
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.patient) throw new Error(payload.error || "患者资料加载失败");
+    patientProfile = { ...DEMO_PATIENT_FALLBACK, ...payload.patient, id: DEMO_PATIENT_ID };
+    patientId = DEMO_PATIENT_ID;
+    localStorage.setItem(PATIENT_PROFILE_KEY, JSON.stringify(patientProfile));
+    renderPatientProfile();
+  } catch (error) {
+    console.warn("使用张某某内置演示资料：", error);
+  }
+  loadMedicationRecords();
 }
 
 function formatRecordTime(value) {
@@ -192,7 +223,7 @@ function renderMedicationRecords(records) {
 async function loadMedicationRecords() {
   if (!patientId || !conversationMedicationRecords) return;
   try {
-    const response = await apiFetch(`/api/patient/medication-records?patient_id=${encodeURIComponent(patientId)}`);
+    const response = await apiFetch(`/api/patient/medication-records?patient_id=${encodeURIComponent(DEMO_PATIENT_ID)}`);
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload.error || "用药记录加载失败");
     renderMedicationRecords(payload.records || []);
@@ -300,7 +331,7 @@ function addRegistrationFiles(fileList) {
 
 async function submitRegistration() {
   const formData = new FormData(registrationForm);
-  const profileId = patientId || createPatientId();
+  const profileId = DEMO_PATIENT_ID;
   const diagnosisDate = String(formData.get("diagnosis_date") || "").trim();
   const currentTreatment = String(formData.get("current_treatment") || "").trim();
   const conditionDetail = String(formData.get("condition_summary") || "").trim();
@@ -781,7 +812,7 @@ async function sendMessage(text) {
     const response = await apiFetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages, patient_id: patientId, conversation_id: conversationId }),
+      body: JSON.stringify({ messages, patient_id: DEMO_PATIENT_ID, conversation_id: conversationId }),
       signal: controller.signal,
     });
 
@@ -1087,10 +1118,4 @@ renderHistory();
 resizeInput();
 checkHealth();
 switchView("chat", { preserveScroll: true });
-if (patientProfile) {
-  renderPatientProfile();
-  loadMedicationRecords();
-  hideRegistration();
-} else {
-  showRegistration();
-}
+loadDemoPatientProfile();

@@ -436,6 +436,7 @@ body::before {
   width: min(100%, var(--phone-width));
   min-height: 100dvh;
   margin: 0 auto;
+  padding-top: 88px;
   padding-bottom: var(--dock-height);
   overflow: hidden;
   background: var(--wechat-bg);
@@ -443,9 +444,12 @@ body::before {
 }
 
 .topbar {
-  position: sticky;
+  position: fixed;
+  z-index: 30;
   top: 0;
+  left: 50%;
   width: 100%;
+  max-width: var(--phone-width);
   height: 88px;
   padding: 30px 12px 0;
   border: 0;
@@ -453,6 +457,7 @@ body::before {
   background: rgba(237,237,237,.96);
   box-shadow: none;
   backdrop-filter: blur(18px);
+  transform: translateX(-50%);
 }
 
 .mobile-status {
@@ -696,6 +701,7 @@ body::before {
   body { background: var(--wechat-bg); }
   .app-shell,
   .registration-screen { box-shadow: none; }
+  .app-shell { padding-top: 82px; }
   .topbar { height: 82px; }
   .chat { min-height: calc(100dvh - var(--dock-height) - 82px); }
   .registration-grid { grid-template-columns: 1fr; gap: 0; }

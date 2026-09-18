@@ -3,20 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="乳腺健康助手微信端体验" />
-    <title>乳腺健康助手 · 微信端</title>
+    <meta name="description" content="依伴AI微信端体验" />
+    <title>依伴AI · 微信端</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css" />
-    <link rel="stylesheet" href="/styles.css?v=wechat-prd-1" />
+    <link rel="stylesheet" href="/styles.css?v=fixed-header-1" />
   </head>
   <body>
     <section class="registration-screen" id="registrationScreen" aria-labelledby="registrationTitle" hidden>
       <div class="registration-visual">
-        <div class="registration-wechat-bar"><i class="ti ti-chevron-left" aria-hidden="true"></i><strong>乳腺健康助手</strong><i class="ti ti-dots" aria-hidden="true"></i></div>
+        <div class="registration-wechat-bar"><i class="ti ti-chevron-left" aria-hidden="true"></i><strong>依伴AI</strong><i class="ti ti-dots" aria-hidden="true"></i></div>
         <span class="registration-brand-mark">依</span>
         <div>
           <span class="registration-eyebrow">专属 AI 健康伙伴</span>
-          <h1>您好，欢迎来到<br>「乳腺健康助手」</h1>
+          <h1>您好，欢迎来到<br>「依伴AI」</h1>
           <p>在开始聊天前，请先完成一次基础信息绑定。今后您只需要像发微信一样和我说话，身体感受、用药和报告都会自动整理到病程档案中。</p>
         </div>
         <div class="registration-trust">
@@ -103,11 +103,11 @@
       <header class="topbar">
         <span class="mobile-status" aria-hidden="true"><strong>9:41</strong><span><i class="ti ti-antenna-bars-5"></i><i class="ti ti-wifi"></i><i class="ti ti-battery-4"></i></span></span>
         <button class="wechat-back" id="backToChatButton" type="button" aria-label="返回聊天" hidden><i class="ti ti-chevron-left"></i></button>
-        <a class="brand" href="/" aria-label="乳腺健康助手聊天首页">
+        <a class="brand" href="/" aria-label="依伴AI聊天首页">
           <span class="brand-mark">依</span>
           <span class="brand-copy">
-            <strong id="brandTitle">乳腺健康助手</strong>
-            <small id="brandSubtitle">微信健康伙伴</small>
+            <strong id="brandTitle">依伴AI</strong>
+            <small id="brandSubtitle">张某某 · 微信健康伙伴</small>
           </span>
         </a>
         <div class="topbar-actions">
@@ -124,7 +124,7 @@
           <div class="assistant-row">
             <div class="ai-avatar" aria-hidden="true">AI</div>
             <div class="welcome-card">
-              <p>您好，我是您的专属 AI 健康伙伴。我会记住您说过的身体感受、用药和报告变化，在需要时帮您整理给医生看。</p>
+              <p><strong>张某某，您好。</strong>我是您的专属 AI 健康伙伴。我会结合您的既往病历，记住您说过的身体感受、用药和报告变化，在需要时帮您整理给医生看。</p>
               <p>今天感觉怎么样？直接和我说就好。</p>
               <div class="welcome-list">
                 <span><i class="ti ti-message-heart" aria-hidden="true"></i> 自然对话整理全病程档案</span>
@@ -158,7 +158,7 @@
 
         <section class="record-card patient-profile-card">
           <div class="patient-summary">
-            <span class="patient-avatar" aria-hidden="true">患</span>
+            <span class="patient-avatar" aria-hidden="true">张</span>
             <div><strong id="patientProfileName">患者档案</strong><span id="patientProfileMeta">完成首次登记后显示资料</span></div>
           </div>
           <div class="record-grid record-grid-four">
@@ -329,6 +329,6 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="/app.js?v=wechat-prd-1" defer></script>
+    <script src="/app.js?v=zhang-demo-2" defer></script>
   </body>
 </html>
