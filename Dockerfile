@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY server.py storage.py pro_scale.py bone_risk.py ./
+COPY server.py storage.py pro_scale.py bone_risk.py demo_patient_data.py ./
 COPY public ./public
 
 RUN mkdir -p /tmp/yiban-demo \
